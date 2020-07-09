@@ -4,9 +4,8 @@ import (
 	"fmt"
 
 	"github.com/vschoener/auth.vincelivemix/src/config"
-	"github.com/vschoener/auth.vincelivemix/src/controllers"
-
-	"github.com/gin-gonic/gin"
+	"github.com/vschoener/auth.vincelivemix/src/database"
+	"github.com/vschoener/auth.vincelivemix/src/router"
 
 	_ "github.com/joho/godotenv/autoload"
 )
@@ -18,15 +17,15 @@ func main() {
 		return
 	}
 
-	r := gin.Default()
+	database, err := database.Connect(config.DatabaseConfig)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+	defer database.Connection.Close()
 
-	r.POST("/login", controllers.Login)
+	router := router.New()
 
-	r.Run("localhost:" + config.WebConfig.Port)
+	router.Run("localhost:" + config.WebConfig.Port)
 }
