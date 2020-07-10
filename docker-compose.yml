@@ -1,6 +1,14 @@
 version: '3.7'
 
 services:
+  migrate:
+    container_name: ${DOCKER_CONTAINER_PREFIX}.migrate
+    image: migrate/migrate
+    volumes: 
+      - ./src/migrations:/migrations
+    environment: 
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
+
   postgres:
     container_name: ${DOCKER_CONTAINER_PREFIX}.postgres
     image: postgres:12.3
