@@ -9,13 +9,19 @@ import (
 	"github.com/vschoener/auth.vincelivemix/src/errors"
 )
 
+type AuthService struct{}
+
+func ProvideAuthService() AuthService {
+	return AuthService{}
+}
+
 // HandleLoginRequest handle the user login
-func HandleLoginRequest(userRequest dto.UserRequest) (dto.AuthenticatedResponse, error) {
+func (a AuthService) HandleLoginRequest(userRequest dto.UserRequest) (dto.AuthenticatedResponse, error) {
 	if userRequest.Password != "admin" || userRequest.Username != "admin" {
 		return dto.AuthenticatedResponse{}, errors.ErrInvalidCredential
 	}
 
-	token, err := CreateUserToken(userRequest)
+	token, err := a.CreateUserToken(userRequest)
 
 	if err != nil {
 		return dto.AuthenticatedResponse{}, err
@@ -27,7 +33,7 @@ func HandleLoginRequest(userRequest dto.UserRequest) (dto.AuthenticatedResponse,
 }
 
 // CreateUserToken create the token
-func CreateUserToken(user dto.UserRequest) (string, error) {
+func (AuthService) CreateUserToken(user dto.UserRequest) (string, error) {
 	atClaims := jwt.MapClaims{}
 
 	atClaims["iss"] = "Vince live mix auth server"

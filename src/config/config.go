@@ -1,6 +1,8 @@
 package config
 
-import "github.com/caarlos0/env/v6"
+import (
+	"github.com/caarlos0/env/v6"
+)
 
 // Config holds the app configuration
 type Config struct {
@@ -8,8 +10,8 @@ type Config struct {
 	DatabaseConfig DatabaseConfig
 }
 
-// New build the configuration application
-func New() (Config, error) {
+// ProvideConfig build the configuration application
+func ProvideConfig() (Config, error) {
 	config := Config{}
 
 	if err := env.Parse(&config); err != nil {

@@ -9,8 +9,18 @@ import (
 	"github.com/vschoener/auth.vincelivemix/src/services"
 )
 
+type AuthController struct {
+	authService services.AuthService
+}
+
+func ProvideAuthController(authService services.AuthService) AuthController {
+	return AuthController{
+		authService: authService,
+	}
+}
+
 // Login catch the login request
-func Login(c *gin.Context) {
+func (a AuthController) Login(c *gin.Context) {
 	var userRequest dto.UserRequest
 	if err := c.ShouldBindJSON(&userRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -20,7 +30,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	body, err := services.HandleLoginRequest(userRequest)
+	body, err := a.authService.HandleLoginRequest(userRequest)
 	if err != nil {
 		if err == errors.ErrInvalidCredential {
 			c.JSON(http.StatusForbidden, gin.H{

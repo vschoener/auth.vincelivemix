@@ -4,3 +4,7 @@ package config
 type DatabaseConfig struct {
 	URL string `env:"DATABASE_URL" envDefault:"postgresql://user:secret@localhost:5432/authentication"`
 }
+
+func ProvideDatabaseConfig(config Config) DatabaseConfig {
+	return config.DatabaseConfig
+}
