@@ -11,18 +11,22 @@ import (
 // Database struct hold the connection
 type Database struct {
 	config     config.DatabaseConfig
-	Connection pgxpool.Pool
+	Connection *pgxpool.Pool
 }
 
-// NewDatabase creates a new Database service
-func ProvideDatabase(databaseConfig config.DatabaseConfig) Database {
-	return Database{
+// ProvideDatabaseConnection creates a new Database connection
+func ProvideDatabaseConnection(databaseConfig config.DatabaseConfig) *Database {
+	database := &Database{
 		config: databaseConfig,
 	}
+
+	database.connect()
+
+	return database
 }
 
 // Connect build the database service
-func (d *Database) Connect() error {
+func (d *Database) connect() error {
 	fmt.Print("Connecting to database...\n")
 	dbPool, err := pgxpool.Connect(context.Background(), d.config.URL)
 	if err != nil {
@@ -31,7 +35,7 @@ func (d *Database) Connect() error {
 
 	fmt.Print("Connected to database\n")
 
-	d.Connection = *dbPool
+	d.Connection = dbPool
 
 	return nil
 }

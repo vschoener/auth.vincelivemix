@@ -1,23 +1,26 @@
 //+build wireinject
-
 package main
 
 import (
 	"github.com/google/wire"
+	app "github.com/vschoener/auth.vincelivemix/src"
 	"github.com/vschoener/auth.vincelivemix/src/config"
 	"github.com/vschoener/auth.vincelivemix/src/controllers"
 	"github.com/vschoener/auth.vincelivemix/src/database"
 	router "github.com/vschoener/auth.vincelivemix/src/http"
+	"github.com/vschoener/auth.vincelivemix/src/repositories"
 	"github.com/vschoener/auth.vincelivemix/src/services"
 )
 
-func appModuleInjector() (AppModule, error) {
+func appModuleInjector() (app.AppModule, error) {
 	panic(wire.Build(
-		ProvideAppModule,
+		app.ProvideAppModule,
 		config.ProvideConfig,
 		config.ProvideWebConfig,
 		config.ProvideDatabaseConfig,
-		database.ProvideDatabase,
+		database.ProvideDatabaseConnection,
+		repositories.ProvideUserRepository,
+		services.ProvideUserService,
 		services.ProvideAuthService,
 		controllers.ProvideAuthController,
 		controllers.ProvideControllers,

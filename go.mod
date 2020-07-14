@@ -7,6 +7,6 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.6.3
 	github.com/google/wire v0.4.0
-	github.com/jackc/pgx/v4 v4.7.1
+	github.com/jackc/pgx/v4 v4.7.2
 	github.com/joho/godotenv v1.3.0
 )

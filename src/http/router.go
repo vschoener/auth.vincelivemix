@@ -17,8 +17,9 @@ func ProvideRouter(config config.WebConfig, controllers controllers.Controllers)
 	r := gin.Default()
 
 	router := Router{
-		engine: r,
-		config: config,
+		engine:      r,
+		config:      config,
+		controllers: controllers,
 	}
 
 	router.setHandler()

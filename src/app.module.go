@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"github.com/vschoener/auth.vincelivemix/src/config"
@@ -6,13 +6,15 @@ import (
 	router "github.com/vschoener/auth.vincelivemix/src/http"
 )
 
+// AppModule structure
 type AppModule struct {
 	config   config.Config
 	router   router.Router
-	database database.Database
+	database *database.Database
 }
 
-func ProvideAppModule(config config.Config, router router.Router, database database.Database) AppModule {
+// ProvideAppModule an app module
+func ProvideAppModule(config config.Config, router router.Router, database *database.Database) AppModule {
 	return AppModule{
 		config:   config,
 		router:   router,
@@ -20,10 +22,10 @@ func ProvideAppModule(config config.Config, router router.Router, database datab
 	}
 }
 
+// Bootstrap the app module
 func (a AppModule) Bootstrap() error {
-	if err := a.database.Connect(); err != nil {
-		return err
-	}
+	// Defer the database close connected during the Provider
+	defer a.database.Connection.Close()
 
 	if err := a.router.Start(); err != nil {
 		return err

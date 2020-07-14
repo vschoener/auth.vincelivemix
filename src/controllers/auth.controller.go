@@ -5,21 +5,23 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vschoener/auth.vincelivemix/src/controllers/dto"
-	"github.com/vschoener/auth.vincelivemix/src/errors"
+	apperrors "github.com/vschoener/auth.vincelivemix/src/errors"
 	"github.com/vschoener/auth.vincelivemix/src/services"
 )
 
+// AuthController structure
 type AuthController struct {
-	authService services.AuthService
+	authService *services.AuthService
 }
 
-func ProvideAuthController(authService services.AuthService) AuthController {
+// ProvideAuthController provide the AuthController
+func ProvideAuthController(authService *services.AuthService) AuthController {
 	return AuthController{
 		authService: authService,
 	}
 }
 
-// Login catch the login request
+// Login route
 func (a AuthController) Login(c *gin.Context) {
 	var userRequest dto.UserRequest
 	if err := c.ShouldBindJSON(&userRequest); err != nil {
@@ -32,7 +34,7 @@ func (a AuthController) Login(c *gin.Context) {
 
 	body, err := a.authService.HandleLoginRequest(userRequest)
 	if err != nil {
-		if err == errors.ErrInvalidCredential {
+		if err == apperrors.ErrInvalidCredential {
 			c.JSON(http.StatusForbidden, gin.H{
 				"message": err.Error(),
 				"status":  http.StatusForbidden,
