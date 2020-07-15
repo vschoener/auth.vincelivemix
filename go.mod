@@ -9,4 +9,5 @@ require (
 	github.com/google/wire v0.4.0
 	github.com/jackc/pgx/v4 v4.7.2
 	github.com/joho/godotenv v1.3.0
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 )

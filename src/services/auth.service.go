@@ -2,9 +2,11 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/vschoener/auth.vincelivemix/src/controllers/dto"
 	"github.com/vschoener/auth.vincelivemix/src/entity"
@@ -25,7 +27,7 @@ func ProvideAuthService(userService *UserService) *AuthService {
 
 // HandleLoginRequest handle the user login
 func (a AuthService) HandleLoginRequest(userRequest dto.UserRequest) (*dto.AuthenticatedResponse, error) {
-	user, err := a.userService.GetUserByEmailAndPassword(userRequest.Username, userRequest.Password)
+	user, err := a.userService.GetUserByEmail(userRequest.Username)
 
 	if err != nil {
 		// We don't need to be specific, just InvalidCredential
@@ -34,6 +36,10 @@ func (a AuthService) HandleLoginRequest(userRequest dto.UserRequest) (*dto.Authe
 		}
 
 		return nil, err
+	}
+
+	if a.DoesPasswordMatch(userRequest.Password, user.Password) == false {
+		return nil, apperrors.ErrInvalidCredential
 	}
 
 	token, err := a.CreateUserToken(user)
@@ -45,6 +51,17 @@ func (a AuthService) HandleLoginRequest(userRequest dto.UserRequest) (*dto.Authe
 	return &dto.AuthenticatedResponse{
 		Token: token,
 	}, nil
+}
+
+// DoesPasswordMatch check if the password match
+func (a AuthService) DoesPasswordMatch(plainPassword string, hashedPassword string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainPassword))
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+
+	return true
 }
 
 // CreateUserToken create the token

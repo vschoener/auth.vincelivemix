@@ -10,10 +10,12 @@ import (
 	"github.com/vschoener/auth.vincelivemix/src/entity"
 )
 
+// UserRepository structure
 type UserRepository struct {
 	database *database.Database
 }
 
+// ProvideUserRepository provide the user repository
 func ProvideUserRepository(database *database.Database) *UserRepository {
 	fmt.Println("Provide User Repository", database)
 	return &UserRepository{
@@ -21,14 +23,15 @@ func ProvideUserRepository(database *database.Database) *UserRepository {
 	}
 }
 
-func (u *UserRepository) FindUserWithEmailAndPassword(email string, password string) (*entity.User, error) {
+// FindUserByEmail will query database to find the user by its email
+func (u *UserRepository) FindUserByEmail(email string) (*entity.User, error) {
 	user := &entity.User{}
 
 	if err := u.database.Connection.
 		QueryRow(context.Background(),
-			"SELECT user_id, email FROM users WHERE email=$1 AND password=$2",
-			email, password).
-		Scan(&user.ID, &user.Email); err != nil {
+			"SELECT user_id, email, password FROM users WHERE email=$1",
+			email).
+		Scan(&user.ID, &user.Email, &user.Password); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
 		}

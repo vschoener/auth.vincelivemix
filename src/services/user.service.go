@@ -19,8 +19,8 @@ func ProvideUserService(userRepository *repositories.UserRepository) *UserServic
 }
 
 // GetUserByEmailAndPassword retrieves the user by email and its password
-func (u *UserService) GetUserByEmailAndPassword(email string, password string) (*entity.User, error) {
-	user, err := u.userRepository.FindUserWithEmailAndPassword(email, password)
+func (u *UserService) GetUserByEmail(email string) (*entity.User, error) {
+	user, err := u.userRepository.FindUserByEmail(email)
 
 	if err != nil {
 		return nil, err
