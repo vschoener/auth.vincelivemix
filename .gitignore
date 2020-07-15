@@ -2,4 +2,4 @@
 
 # For now I'll ignore it because I think it would be generated during a Docker build usage
 # and during CI while testing the code. Let see if it fit this way
-./src/wire_gen.go
+wire_gen.go
