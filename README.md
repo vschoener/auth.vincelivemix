@@ -32,6 +32,31 @@ So everytime you need to inject a service, think about 2 places:
 Testing has not been covered yet cause I was focus others tasks as I was playing around with the language and see good practice around it.
 But don't worry, In a pro situation, they will already exists.
 
+## Migration
+
+Migration is not handle by the any app code, but directly from an external library doing all the need for us. This decision saved me time and it was a good call for this project.
+
+### Create new migration
+
+Migration are not created from Entity changes as we could have in NestJs/Symfony/SpringBoot. So you need to write by hand your SQL query.
+So generate the file using the make command:
+
+```bash
+make new-migration MIGRATION_NAME=name_something
+```
+
+Then, write your down and up changes from the 2 new files in `./src/migration` folder you
+
+### Run migration
+
+To run migration, use the following command:
+
+```bash
+make run-migration
+```
+
+This required a valid database connection using by default the container in the docker-compose file. If you wish to apply this change in a different environment, change the env variables in `DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable` or just set a `DATABASE_URL` that should be overridden
+
  ## Docker
 
  ### Docker-compose
