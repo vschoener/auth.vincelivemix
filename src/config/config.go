@@ -8,6 +8,7 @@ import (
 type Config struct {
 	WebConfig      WebConfig
 	DatabaseConfig DatabaseConfig
+	SecurityConfig SecurityConfig
 }
 
 // ProvideConfig build the configuration application

@@ -18,6 +18,7 @@ func appModuleInjector() (app.AppModule, error) {
 		config.ProvideConfig,
 		config.ProvideWebConfig,
 		config.ProvideDatabaseConfig,
+		config.ProvideSecurityConfig,
 		database.ProvideDatabaseConnection,
 		repositories.ProvideUserRepository,
 		services.ProvideUserService,
