@@ -33,6 +33,8 @@ func (d *Database) connect() error {
 		return fmt.Errorf("Unable to connect to database: %w\n", err)
 	}
 
+	// TODO: If database is not connected, it continue to load the HTTP Server. This should stop the app right after.
+	// Or retry to connect. Log are pretty bad when DB is not available and request are coming to deal with db.
 	fmt.Print("Connected to database\n")
 
 	d.Connection = dbPool

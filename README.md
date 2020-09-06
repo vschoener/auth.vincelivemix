@@ -18,14 +18,27 @@ TODO:
 
  Default configs are stored in the dedicated file in the `./config`  and it uses annotation to define their values.
 
-
 ## Dependency Injection
 
 To apply good practice, DI is back with Wire (from google). This DI is generated from code (injector) we write in the `wire.go` file.
 
-So everytime you need to inject a service, think about 2 places:
+So every time you need to inject a service, think about 2 places:
 - Change the Provider of the service you want to add a new one
 - If the provider is new, add it to the `wire.go` file
+
+Then to generate the `wire_gen.go` file, simply run the `wire` command
+
+
+ ## Run the app
+
+When the wire has been generated, simply run the following command. See [Dependency-Injection](#Dependency-Injection)
+
+```bash
+# Development purpose
+go run ./main.go ./wire_gen.go
+
+# Production is not yet ready but I assume we will run the binary
+```
 
 ## Testing
 
