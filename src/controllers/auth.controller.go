@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vschoener/auth.vincelivemix/src/controllers/dto"
@@ -50,4 +51,31 @@ func (a AuthController) Login(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, body)
+}
+
+// GetUser fetch user
+func (a AuthController) GetUser(c *gin.Context) {
+	authorization := c.GetHeader("Authorization")
+
+	authorizations := strings.Split(authorization, " ")
+
+	if len(authorizations) != 2 {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Unauthorized",
+			"status":  http.StatusUnauthorized,
+		})
+		return
+	}
+
+	userFetch, err := a.authService.GetUserFromToken(authorizations[1])
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Unauthorized",
+			"status":  http.StatusUnauthorized,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, userFetch)
 }

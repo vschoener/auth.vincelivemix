@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -18,6 +19,12 @@ import (
 type AuthService struct {
 	securityConfig config.SecurityConfig
 	userService    *UserService
+}
+
+type jwtMetadata struct {
+	UserLocation string
+	UserID       string
+	Roles        []string
 }
 
 // ProvideAuthService provide the Auth service
@@ -86,4 +93,68 @@ func (a AuthService) CreateUserToken(user *entity.User) (string, error) {
 	}
 
 	return token, nil
+}
+
+func (a AuthService) VerifyToken(requestToken string) (*jwt.Token, error) {
+	token, err := jwt.Parse(requestToken, func(token *jwt.Token) (interface{}, error) {
+		//Make sure that the token method conform to "SigningMethodHMAC"
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(a.securityConfig.AuthPrivateKey), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return token, nil
+}
+
+func (a AuthService) ExtractTokenMetadata(requestToken string) (*jwtMetadata, error) {
+	token, err := a.VerifyToken(requestToken)
+	if err != nil {
+		return nil, err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if ok && token.Valid {
+		sub, ok := claims["sub"].(string)
+		if !ok {
+			return nil, err
+		}
+
+		rolesSlice, ok := claims["roles"].([]interface{})
+		if !ok {
+			return nil, err
+		}
+
+		// Need conversion from concrete type
+		roles := make([]string, len(rolesSlice))
+		for i, v := range rolesSlice {
+			roles[i] = fmt.Sprint(v)
+		}
+
+		userInfo := strings.Split(sub, "|")
+
+		return &jwtMetadata{
+			UserLocation: userInfo[0],
+			UserID:       userInfo[1],
+			Roles:        roles,
+		}, nil
+	}
+
+	return nil, err
+}
+
+func (a AuthService) GetUserFromToken(requestToken string) (*dto.UserFetchResponse, error) {
+	jwtMetadata, err := a.ExtractTokenMetadata(requestToken)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.UserFetchResponse{
+		UserID: jwtMetadata.UserID,
+		Roles:  jwtMetadata.Roles,
+	}, nil
 }

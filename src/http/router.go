@@ -35,6 +35,7 @@ func (r *Router) setHandler() {
 	})
 
 	r.engine.POST("/login", r.controllers.AuthController.Login)
+	r.engine.GET("/user", r.controllers.AuthController.GetUser)
 }
 
 func (r *Router) Start() error {
